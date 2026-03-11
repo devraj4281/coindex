@@ -13,10 +13,10 @@ import {
   getChartConfig,
   PERIOD_BUTTONS,
 } from '@/constants';
-import { BINANCE_SYMBOL_MAP } from '@/lib/binance/symbolMap';
+import { SYMBOL_MAP } from '@/lib/exchanges';
 
-import { useBinanceCandles } from '@/components/hooks/useBinanceCandles';
-import { useBinanceLiveCandle } from '@/components/hooks/useBinanceLiveCandle';
+import { useCandles } from '@/components/hooks/useCandles';
+import { useLiveCandle } from '@/components/hooks/useLiveCandle';
 
 interface CandlestickChartProps {
   children?: React.ReactNode;
@@ -61,9 +61,8 @@ const CandlestickChart = ({
   const [period, setPeriod] = useState<Period>(initialPeriod);
 
   const interval = PERIOD_TO_INTERVAL[period];
-  const symbol = BINANCE_SYMBOL_MAP[coinId] ?? 'BTCUSDT';
-  
-  const candles = useBinanceCandles(symbol, interval);
+  const symbol = SYMBOL_MAP[coinId] ?? 'BTCUSDT';
+  const candles = useCandles(symbol, interval);
 
   useEffect(() => {
     const container = chartContainerRef.current;
@@ -132,7 +131,7 @@ const CandlestickChart = ({
     }
   }, [candles, isChartReady, period]);
 
-  useBinanceLiveCandle(symbol, interval, (live) => {
+  useLiveCandle(symbol, interval, (live) => {
     if (!candleSeriesRef.current || !candles.length || !isChartReady) return;
 
     try {

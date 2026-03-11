@@ -4,8 +4,13 @@ import Image from 'next/image';
 import { fetcher } from '@/lib/coingecko.actions';
 import { cn, formatCurrency, formatPercentage, formatCompactNumber } from '@/lib/utils';
 import { TrendingDown, TrendingUp } from 'lucide-react';
-import CandlestickChart from '@/components/ui/CandlestickChart';
+import dynamic from 'next/dynamic';
 import CurrencyConverter from '@/components/ui/CurrencyConverter';
+
+const CandlestickChart = dynamic(
+  () => import('@/components/ui/CandlestickChart'),
+  { ssr: false },
+);
 
 interface CoinPageProps {
   params: Promise<{ id: string }>;
