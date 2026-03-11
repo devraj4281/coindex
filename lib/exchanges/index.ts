@@ -3,7 +3,8 @@
  *
  * Set the EXCHANGE env variable to switch data providers at deploy time:
  *
- *   EXCHANGE=bybit    → Bybit (default, no geo-restrictions)
+ *   EXCHANGE=okx      → OKX   (default — no geo-restrictions)
+ *   EXCHANGE=bybit    → Bybit (may be blocked on US cloud IPs)
  *
  * To add a new exchange:
  *   1. Create lib/exchanges/adapters/<name>.ts  implementing ExchangeRestAdapter
@@ -13,25 +14,25 @@
  */
 
 import { BybitRestAdapter } from './adapters/bybit';
+import { OkxRestAdapter }   from './adapters/okx';
 import type { ExchangeRestAdapter } from './types';
 
 export { type Candle, type LiveCandleUpdate, type ExchangeRestAdapter, type ExchangeWsAdapter } from './types';
 export { SYMBOL_MAP } from './symbolMap';
 
 // ─── Registry ─────────────────────────────────────────────────────────────────
-// Add new exchanges here.  The value is a factory fn so adapters are only
-// instantiated when actually selected (no unnecessary network calls / init work).
 
-type SupportedExchange = 'bybit'; // extend union as you add adapters
+type SupportedExchange = 'okx' | 'bybit';
 
 const ADAPTERS: Record<SupportedExchange, () => ExchangeRestAdapter> = {
+    okx:   () => new OkxRestAdapter(),
     bybit: () => new BybitRestAdapter(),
 };
 
 // ─── Factory ──────────────────────────────────────────────────────────────────
 
 function createRestAdapter(): ExchangeRestAdapter {
-    const raw = (process.env.EXCHANGE ?? 'bybit').toLowerCase();
+    const raw = (process.env.EXCHANGE ?? 'okx').toLowerCase();
     const exchange = raw as SupportedExchange;
     const factory = ADAPTERS[exchange];
 
@@ -39,17 +40,17 @@ function createRestAdapter(): ExchangeRestAdapter {
         const available = Object.keys(ADAPTERS).join(', ');
         console.warn(
             `[exchanges] Unknown exchange "${raw}". ` +
-            `Available: ${available}. Falling back to "bybit".`,
+            `Available: ${available}. Falling back to "okx".`,
         );
-        return new BybitRestAdapter();
+        return new OkxRestAdapter();
     }
 
     const adapter = factory();
-    console.log(`[exchanges] Active adapter → ${adapter.name}`);
+    console.log(`[exchanges] Active REST adapter → ${adapter.name}`);
     return adapter;
 }
 
-// ─── Singleton ────────────────────────────────────────────────────────────────
+// ─── Singletons ───────────────────────────────────────────────────────────────
 // Resolved once at module-load time (server start / cold start on Vercel).
 
 export const restAdapter = createRestAdapter();

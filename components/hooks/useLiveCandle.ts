@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { BybitWsAdapter } from '@/lib/exchanges/adapters/bybit-ws';
+import { OkxWsAdapter } from '@/lib/exchanges/adapters/okx-ws';
 import type { LiveCandleUpdate } from '@/lib/exchanges';
 
-const wsAdapter = new BybitWsAdapter();
+const wsAdapter = new OkxWsAdapter();
 
 export function useLiveCandle(
   symbol: string,
