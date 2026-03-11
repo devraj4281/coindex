@@ -1,8 +1,21 @@
-version: "3"
+version: "3.8"
 
 services:
   coindex:
-    build: .
+    build:
+      context: .
+      args:
+        - COINGECKO_BASE_URL=${COINGECKO_BASE_URL:-https://api.coingecko.com/api/v3}
+        - NEXT_PUBLIC_COINGECKO_API_KEY=${NEXT_PUBLIC_COINGECKO_API_KEY}
+        - EXCHANGE=${EXCHANGE:-bybit}
+    hostname: coindex
     ports:
       - "3000:3000"
-    restart: always
+    environment:
+      - NODE_ENV=production
+      - COINGECKO_BASE_URL=${COINGECKO_BASE_URL:-https://api.coingecko.com/api/v3}
+      - NEXT_PUBLIC_COINGECKO_API_KEY=${NEXT_PUBLIC_COINGECKO_API_KEY}
+      - EXCHANGE=${EXCHANGE:-bybit}
+    env_file:
+      - .env.local
+    restart: unless-stopped

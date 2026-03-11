@@ -1,8 +1,31 @@
+# Dependencies (reinstalled inside Docker)
 node_modules
+
+# Next.js build output
 .next
+out
+
+# Git
 .git
 .gitignore
-Dockerfile
-docker-compose.yml
+.gitattributes
+
+# Local env files — never bake secrets into the image
 .env
-npm-debug.log
+.env.local
+.env.*.local
+
+# Docker files (no need to copy these into the image)
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Docs & misc
+README.md
+*.md
+.editorconfig
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
