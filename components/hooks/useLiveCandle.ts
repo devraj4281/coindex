@@ -1,22 +1,24 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { connectBinanceLiveCandles } from '@/lib/binance/ws';
+import { BybitWsAdapter } from '@/lib/exchanges/adapters/bybit-ws';
+import type { LiveCandleUpdate } from '@/lib/exchanges';
 
-export function useBinanceLiveCandle(
+const wsAdapter = new BybitWsAdapter();
+
+export function useLiveCandle(
   symbol: string,
   interval: string,
-  onUpdate: (candle: any) => void,
+  onUpdate: (candle: LiveCandleUpdate) => void,
 ) {
   const onUpdateRef = useRef(onUpdate);
 
- 
   useEffect(() => {
     onUpdateRef.current = onUpdate;
   }, [onUpdate]);
 
   useEffect(() => {
-    const disconnect = connectBinanceLiveCandles(
+    const disconnect = wsAdapter.connectLive(
       symbol,
       interval,
       (candle) => onUpdateRef.current(candle),
